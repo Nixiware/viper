@@ -50,6 +50,7 @@ class Dispatcher():
         controllerInstance = controller.Controller(
             self.application,
             requestProtocol,
+            requestPayload["version"],
             requestPayload["parameters"]
         )
 

@@ -4,9 +4,10 @@ class Controller:
     responseContent = {}
     responseErrors = []
 
-    def __init__(self, application, requestProtocol, requestParameters):
+    def __init__(self, application, requestProtocol, requestVersion, requestParameters):
         self.application = application
         self.requestProtocol = requestProtocol
+        self.requestVersion = requestVersion
         self.requestParameters = requestParameters
 
         self.responseCode = 0
