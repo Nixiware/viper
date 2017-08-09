@@ -123,7 +123,7 @@ class Application():
             return self._models[modelIdentifier]
         else:
             message = "Application - getModel() - " \
-                      "Service with identifier does not exist." \
+                      "Model with identifier {} does not exist." \
                       .format(modelIdentifier)
             raise Exception(message)
 
@@ -172,7 +172,7 @@ class Application():
             return self._services[serviceIdentifier]
         else:
             message = "Application - getService() - " \
-                      "Service with identifier does not exist." \
+                      "Service with identifier {} does not exist." \
                       .format(serviceIdentifier)
             raise Exception(message)
 
