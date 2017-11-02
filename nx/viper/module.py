@@ -1,4 +1,5 @@
 import os
+import ntpath
 import importlib.util
 
 from nx.viper.config import Config
@@ -57,24 +58,50 @@ class Module:
         if not os.path.isdir(servicesPath):
             return
 
-        for serviceFile in os.listdir(servicesPath):
-            serviceName = serviceFile.replace(".py", "")
-            servicePath = os.path.join(
-                self.path, "service", serviceFile
+        self._scanDirectoryForServices(servicesPath)
+
+    def _scanDirectoryForServices(self, directoryPath):
+        """
+        Scans a directory looking for services.
+        If another directory is found (excluding any python bytecode cache), it recursively
+        calls itself on that directory.
+        If a python file is found, an attempt to load the service from it is performed.
+        """
+        # checking if path is actually a directory
+        if not os.path.isdir(directoryPath):
+            return
+
+        for item in os.listdir(directoryPath):
+            itemPath = os.path.join(
+                directoryPath, item
             )
 
-            if not os.path.isfile(servicePath):
+            if os.path.isdir(itemPath) and not "__pycache__" in itemPath:
+                self._scanDirectoryForServices(itemPath)
                 continue
 
-            # importing service
-            serviceSpec = importlib.util.spec_from_file_location(
-                serviceName,
-                servicePath
-            )
-            service = importlib.util.module_from_spec(serviceSpec)
-            serviceSpec.loader.exec_module(service)
+            if os.path.isfile(itemPath) and itemPath.lower().endswith((".py",)):
+                self._loadService(itemPath)
+                continue
 
-            # initializing service
+    def _loadService(self, servicePath):
+        """
+        Checks if an application service can be found at the specified path.
+        If found, it instantiate it and adds it to the application service pool.
+        """
+        serviceName = ntpath.basename(servicePath).replace(".py", "")
+
+        # importing service
+        serviceSpec = importlib.util.spec_from_file_location(
+            serviceName,
+            servicePath
+        )
+        service = importlib.util.module_from_spec(serviceSpec)
+        serviceSpec.loader.exec_module(service)
+
+        # checking if there is a service in the file
+        if hasattr(service, "Service"):
+            # instantiate the service
             serviceInstance = service.Service(self.application)
             self.application.addService(
                 self.name,
