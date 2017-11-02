@@ -1,4 +1,5 @@
 import os
+import ntpath
 import importlib.util
 
 from twisted.words.xish.utility import EventDispatcher
@@ -53,13 +54,18 @@ class Application():
         interfacesPath = os.path.join("application", "interface")
         interfaceList = os.listdir(interfacesPath)
 
-        for interfaceFile in interfaceList:
-            if not interfaceFile.endswith(".py") or interfaceFile.startswith("__"):
+        for file in interfaceList:
+            interfaceDirectoryPath = os.path.join(interfacesPath, file)
+            if not os.path.isdir(interfaceDirectoryPath) or file.startswith("__"):
+                continue
+
+            interfaceName = ntpath.basename(interfaceDirectoryPath)
+            interfacePath = os.path.join(interfaceDirectoryPath, interfaceName) + ".py"
+
+            if not os.path.isfile(interfacePath):
                 continue
 
             # importing interface
-            interfacePath = os.path.join(interfacesPath, interfaceFile)
-            interfaceName = interfaceFile.replace(".py", "")
             interfaceSpec = importlib.util.spec_from_file_location(
                 interfaceName,
                 interfacePath
@@ -67,9 +73,11 @@ class Application():
             interface = importlib.util.module_from_spec(interfaceSpec)
             interfaceSpec.loader.exec_module(interface)
 
-            # initializing interface
-            interfaceInstance = interface.Service(self)
-            self._interfaces[interfaceName] = interfaceInstance
+            # checking if there is an interface in the file
+            if hasattr(interface, "Service"):
+                # initializing interface
+                interfaceInstance = interface.Service(self)
+                self._interfaces[interfaceName] = interfaceInstance
 
     def getInterfaces(self):
         """Returns the loaded communication interfaces."""
