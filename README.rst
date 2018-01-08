@@ -3,7 +3,7 @@ Viper
 
 Introduction
 ------------
-Viper is an application development framework for twisted heavely inspired by PHP's Zend framework.
+Viper is an application development framework for twisted heavily inspired by PHP's Zend Framework.
 
 Notice
 ------------
