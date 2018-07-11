@@ -3,10 +3,15 @@ import json
 
 
 class Config:
-    _data = {}
-
     def __init__(self, directoryPath):
-        """Loads all configuration files at a given path."""
+        """
+        Loads all configuration files at a given path.
+
+        :param directoryPath: <str> path to load
+        """
+
+        self._data = {}
+
         configFiles = os.listdir(directoryPath)
         configFilesPendingLoading = []
 
@@ -44,12 +49,22 @@ class Config:
             Config.mergeDictionaries(json.load(configFile), self._data)
 
     def getData(self):
-        """Returns the loaded configuration data."""
+        """
+        Returns the loaded configuration data.
+
+        :return: <dict>
+        """
         return self._data
 
     @staticmethod
     def mergeDictionaries(sourceDictionary, destinationDictionary):
-        """Deep merges dictionaries recursively."""
+        """
+        Deep merges dictionaries recursively.
+
+        :param sourceDictionary: <dict> first dictionary with data
+        :param destinationDictionary: <dict> second dictionary with data
+        :return: <dict> merged dictionary
+        """
         for key, value in sourceDictionary.items():
             # ignoring comments
             if key == "//":

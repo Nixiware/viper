@@ -1,8 +1,7 @@
 class Controller:
-    """Base controller class that every controller must extend from."""
-    responseCode = 0
-    responseContent = {}
-    responseErrors = []
+    """
+    Base controller class that every controller must extend.
+    """
 
     def __init__(self, application, requestProtocol, requestVersion, requestParameters):
         self.application = application
@@ -15,15 +14,27 @@ class Controller:
         self.responseErrors = []
 
     def preDispatch(self):
-        """Method called before the request action is triggered."""
+        """
+        Method called before the request action is triggered.
+
+        :return: <void>
+        """
         pass
 
     def postDispatch(self):
-        """Method called after the request action is triggered."""
+        """
+        Method called after the request action is triggered.
+
+        :return: <void>
+        """
         pass
 
     def sendPartialResponse(self):
-        """Sends a partial response without closing the request."""
+        """
+        Send a partial response without closing the connection.
+
+        :return: <void>
+        """
         self.requestProtocol.requestResponse["code"] = (
             self.responseCode
         )
@@ -36,7 +47,11 @@ class Controller:
         self.requestProtocol.sendPartialRequestResponse()
 
     def sendFinalResponse(self):
-        """Sends the final response and closes the request."""
+        """
+        Send the final response and close the connection.
+
+        :return: <void>
+        """
         self.requestProtocol.requestResponse["code"] = (
             self.responseCode
         )

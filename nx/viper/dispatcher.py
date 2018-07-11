@@ -3,13 +3,20 @@ import importlib.util
 
 
 class Dispatcher():
-    application = None
-
     def __init__(self, application):
         self.application = application
 
     def dispatch(self, requestProtocol, requestPayload):
-        """Dispatches the request to the appropiate handler."""
+        """
+        Dispatches the request to the appropiate handler.
+
+        :param requestProtocol: <AbstractApplicationInterfaceProtocol> request protocol
+        :param requestPayload: <dict> request
+            :param version: <float> version
+            :param method: <str> method name
+            :param parameters: <dict> data parameters
+        :return: <void>
+        """
         # method decoding
         method = requestPayload["method"].split(".")
         if len(method) != 3:

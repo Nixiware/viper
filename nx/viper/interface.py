@@ -2,41 +2,74 @@ class AbstractApplicationInterfaceProtocol():
     """
     Abstract class for Viper application communication interface.
 
-    All communication interfaces must extend this class in order to
-    ensure 100% compatibility with the request dispatcher.
+    Any communication interface must extend this class in order to ensure compatibility with the request dispatcher.
     """
-    requestResponse = {
-        "code": 0,
-        "content": None,
-        "errors": []
-    }
+
+    def setup(self):
+        """
+        Prepares the interface for handling the connection.
+        Should be called from the extending interface as soon as possible.
+
+        :return: <void>
+        """
+        self.requestResponse = {
+            "code": 0,
+            "content": None,
+            "errors": []
+        }
 
     def getIPAddress(self):
+        """
+        Return the connection client IP address.
+
+        :return: <str>
+        """
         raise NotImplementedError(
-            "AbstractApplicationInterfaceProtocol - "
+            "AbstractApplicationInterfaceProtocol - " \
             "getIPAddress"
         )
 
     def requestPassedDispatcherValidation(self):
+        """
+        Called before request is passed to controller.
+
+        :return: <void>
+        """
         raise NotImplementedError(
-            "AbstractApplicationInterfaceProtocol - "
+            "AbstractApplicationInterfaceProtocol - " \
             "requestPassedDispatcherValidation"
         )
 
     def failRequestWithErrors(self, errors):
+        """
+        End the connection with a failure.
+
+        :param errors: <list> errors as <str>
+        :return: <void>
+        """
         raise NotImplementedError(
-            "AbstractApplicationInterfaceProtocol - "
+            "AbstractApplicationInterfaceProtocol - " \
             "failRequestWithErrors"
         )
 
     def sendPartialRequestResponse(self):
+        """
+        Send a partial response over the connection.
+
+        :return: <void>
+        """
         raise NotImplementedError(
-            "AbstractApplicationInterfaceProtocol - "
+            "AbstractApplicationInterfaceProtocol - " \
             "sendPartialRequestResponse"
         )
 
     def sendFinalRequestResponse(self):
+        """
+        Send a final response over the connection.
+
+        :return: <void>
+        """
         raise NotImplementedError(
-            "AbstractApplicationInterfaceProtocol - "
+            "AbstractApplicationInterfaceProtocol - " \
             "sendFinalRequestResponse"
         )

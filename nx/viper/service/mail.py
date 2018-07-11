@@ -1,36 +1,62 @@
 import smtplib
 
-from nx.viper.application import Application as ViperApplication
-
 from twisted.logger import Logger
+
+from nx.viper.application import Application
 
 
 class Service:
     log = Logger()
-    smtp = None
 
     def __init__(self, application):
         self.application = application
+
         self.application.eventDispatcher.addObserver(
-            ViperApplication.kEventApplicationStart,
+            Application.kEventApplicationStart,
             self._applicationStart
         )
 
     def _applicationStart(self, data):
-        """Initialize the SMTP connection."""
-        self.smtp = smtplib.SMTP()
+        self.configured = False
+
+        if "mail" in self.application.config:
+            if "host" in self.application.config["mail"] and "port" in self.application.config["mail"]:
+                if len(self.application.config["mail"]["host"]) > 0 and \
+                        self.application.config["mail"]["port"] > 0:
+                    self.configured = True
 
     def send(self, recipient, subject, message):
-        """Sends an email using the SMTP connection."""
+        """
+        Sends an email using the SMTP connection.
+
+        :param recipient: <tuple> recipient's email address as the first element, and their name as an optional second
+                            element
+        :param subject: <str> mail subject
+        :param message: <str> mail content (as HTML markup)
+        :return: <bool> True if mail was sent successfully, False otherwise
+        """
+        if self.configured is False:
+            return False
+
         # connecting to server
         try:
+            self.smtp = smtplib.SMTP(
+                self.application.config["mail"]["host"],
+                self.application.config["mail"]["port"]
+            )
+
             self.smtp.connect(
                 self.application.config["mail"]["host"],
                 self.application.config["mail"]["port"]
             )
-        except:
-            self.smtp.quit()
-            self.log.error("Cannot connect to SMTP server.")
+
+            if self.application.config["mail"]["tls"]:
+                self.smtp.starttls()
+        except Exception as e:
+            if hasattr(self, "smtp") and self.smtp is not None:
+                self.smtp.quit()
+
+            self.log.warn("[Viper.Mail] Cannot connect to server. Error: {error}", error=str(e))
             return False
 
         # performing authentication
@@ -40,9 +66,11 @@ class Service:
                     self.application.config["mail"]["username"],
                     self.application.config["mail"]["password"]
                 )
-            except:
-                self.smtp.quit()
-                self.log.error("Cannot authenticate with SMTP server.")
+            except Exception as e:
+                if hasattr(self, "smtp") and self.smtp is not None:
+                    self.smtp.quit()
+
+                self.log.warn("[Viper.Mail] Cannot authenticate with server. Error: {error}", error=str(e))
                 return False
 
         # composing message headers
@@ -88,23 +116,31 @@ class Service:
                 [recipient[0]],
                 emailContents
             )
-        except smtplib.SMTPRecipientsRefused:
-            self.smtp.quit()
+        except smtplib.SMTPRecipientsRefused as e:
+            if hasattr(self, "smtp") and self.smtp is not None:
+                self.smtp.quit()
+
             self.log.warn(
-                "SMTP server refused mail recipients: {recipients}.",
-                recipients=recipient
+                "[Viper.Mail] Server refused mail recipients: {recipients}. Error: {error}",
+                recipients=recipient,
+                error=str(e)
             )
             return False
-        except smtplib.SMTPSenderRefused:
-            self.smtp.quit()
+        except smtplib.SMTPSenderRefused as e:
+            if hasattr(self, "smtp") and self.smtp is not None:
+                self.smtp.quit()
+
             self.log.warn(
-                "SMTP server refused mail sender: {sender}.",
-                sender=self.application.config["mail"]["from"]
+                "[Viper.Mail] Server refused mail sender: {sender}. Error: {error}",
+                sender=self.application.config["mail"]["from"],
+                error=str(e)
             )
             return False
-        except:
-            self.smtp.quit()
-            self.log.warn("SMTP server refused to deliver mail.")
+        except Exception as e:
+            if hasattr(self, "smtp") and self.smtp is not None:
+                self.smtp.quit()
+
+            self.log.warn("[Viper.Mail] Server refused to deliver mail. Error: {error}", error=str(e))
             return False
 
         return True

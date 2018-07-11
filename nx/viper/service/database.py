@@ -8,8 +8,6 @@ pymysql.install_as_MySQLdb()
 
 
 class Service:
-    _connectionPool = None
-
     def __init__(self, application):
         self.application = application
         self.application.eventDispatcher.addObserver(
@@ -18,7 +16,12 @@ class Service:
         )
 
     def _applicationStart(self, data):
-        """Initializes the database connection pool."""
+        """
+        Initializes the database connection pool.
+
+        :param data: <object> event data object
+        :return: <void>
+        """
         self._connectionPool = adbapi.ConnectionPool(
             "MySQLdb",
             host=self.application.config["database"]["host"],
