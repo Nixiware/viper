@@ -6,6 +6,11 @@ from nx.viper.application import Application
 
 
 class Service:
+    """
+    SMTP mail service
+
+    Email sender based on Pythons's smtplib.
+    """
     log = Logger()
 
     def __init__(self, application):
@@ -19,17 +24,18 @@ class Service:
     def _applicationStart(self, data):
         self.configured = False
 
-        if "mail" in self.application.config:
-            if "host" in self.application.config["mail"] and "port" in self.application.config["mail"]:
-                if len(self.application.config["mail"]["host"]) > 0 and \
-                        self.application.config["mail"]["port"] > 0:
+        if "viper.mail" in self.application.config:
+            if "host" in self.application.config["viper.mail"] \
+                    and "port" in self.application.config["viper.mail"]:
+                if len(self.application.config["viper.mail"]["host"]) > 0 and \
+                        self.application.config["viper.mail"]["port"] > 0:
                     self.configured = True
 
     def send(self, recipient, subject, message):
         """
         Sends an email using the SMTP connection.
 
-        :param recipient: <tuple> recipient's email address as the first element, and their name as an optional second
+        :param recipient: <tuple> recipient's email address as the first element and their name as an optional second
                             element
         :param subject: <str> mail subject
         :param message: <str> mail content (as HTML markup)
@@ -41,43 +47,49 @@ class Service:
         # connecting to server
         try:
             self.smtp = smtplib.SMTP(
-                self.application.config["mail"]["host"],
-                self.application.config["mail"]["port"]
+                self.application.config["viper.mail"]["host"],
+                self.application.config["viper.mail"]["port"]
             )
 
             self.smtp.connect(
-                self.application.config["mail"]["host"],
-                self.application.config["mail"]["port"]
+                self.application.config["viper.mail"]["host"],
+                self.application.config["viper.mail"]["port"]
             )
 
-            if self.application.config["mail"]["tls"]:
+            if self.application.config["viper.mail"]["tls"]:
                 self.smtp.starttls()
         except Exception as e:
             if hasattr(self, "smtp") and self.smtp is not None:
                 self.smtp.quit()
 
-            self.log.warn("[Viper.Mail] Cannot connect to server. Error: {error}", error=str(e))
+            self.log.warn(
+                "[Viper.Mail] Cannot connect to server. Error: {error}",
+                error=str(e)
+            )
             return False
 
         # performing authentication
-        if len(self.application.config["mail"]["username"]) > 0:
+        if len(self.application.config["viper.mail"]["username"]) > 0:
             try:
                 self.smtp.login(
-                    self.application.config["mail"]["username"],
-                    self.application.config["mail"]["password"]
+                    self.application.config["viper.mail"]["username"],
+                    self.application.config["viper.mail"]["password"]
                 )
             except Exception as e:
                 if hasattr(self, "smtp") and self.smtp is not None:
                     self.smtp.quit()
 
-                self.log.warn("[Viper.Mail] Cannot authenticate with server. Error: {error}", error=str(e))
+                self.log.warn(
+                    "[Viper.Mail] Cannot authenticate with server. Error: {error}",
+                    error=str(e)
+                )
                 return False
 
         # composing message headers
         messageHeaders = []
         messageHeaders.append("From: {} <{}>".format(
-            self.application.config["mail"]["name"],
-            self.application.config["mail"]["from"]
+            self.application.config["viper.mail"]["name"],
+            self.application.config["viper.mail"]["from"]
         ))
 
         if len(recipient) == 2:
@@ -112,7 +124,7 @@ class Service:
         # sending email
         try:
             self.smtp.sendmail(
-                self.application.config["mail"]["from"],
+                self.application.config["viper.mail"]["from"],
                 [recipient[0]],
                 emailContents
             )
@@ -121,7 +133,8 @@ class Service:
                 self.smtp.quit()
 
             self.log.warn(
-                "[Viper.Mail] Server refused mail recipients: {recipients}. Error: {error}",
+                "[Viper.Mail] Server refused mail recipients: " \
+                "{recipients}. Error: {error}",
                 recipients=recipient,
                 error=str(e)
             )
@@ -131,8 +144,9 @@ class Service:
                 self.smtp.quit()
 
             self.log.warn(
-                "[Viper.Mail] Server refused mail sender: {sender}. Error: {error}",
-                sender=self.application.config["mail"]["from"],
+                "[Viper.Mail] Server refused mail sender: {sender}. " \
+                "Error: {error}",
+                sender=self.application.config["viper.mail"]["from"],
                 error=str(e)
             )
             return False
@@ -140,7 +154,10 @@ class Service:
             if hasattr(self, "smtp") and self.smtp is not None:
                 self.smtp.quit()
 
-            self.log.warn("[Viper.Mail] Server refused to deliver mail. Error: {error}", error=str(e))
+            self.log.warn(
+                "[Viper.Mail] Server refused to deliver mail. Error: {error}",
+                error=str(e)
+            )
             return False
 
         return True

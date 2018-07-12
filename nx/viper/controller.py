@@ -1,6 +1,8 @@
 class Controller:
     """
-    Base controller class that every controller must extend.
+    Viper controller
+
+    Base controller class for controllers instantiated by the Viper dispatcher.
     """
 
     def __init__(self, application, requestProtocol, requestVersion, requestParameters):

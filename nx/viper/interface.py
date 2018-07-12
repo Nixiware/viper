@@ -1,8 +1,8 @@
 class AbstractApplicationInterfaceProtocol():
     """
-    Abstract class for Viper application communication interface.
+    Abstract class for all Viper application communication interface.
 
-    Any communication interface must extend this class in order to ensure compatibility with the request dispatcher.
+    Base interface class for all interfaces instantiated by the Viper application.
     """
 
     def setup(self):

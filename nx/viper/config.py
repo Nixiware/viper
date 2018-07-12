@@ -3,13 +3,20 @@ import json
 
 
 class Config:
+    """
+    Configuration
+
+    Load JSON configuration files at a specified directory, prioritizing
+    *.local over *.global and merging into a single dictionary.
+    Allows inclusion of comments in JSON.
+    """
+
     def __init__(self, directoryPath):
         """
-        Loads all configuration files at a given path.
+        Load all configuration files at a given path.
 
         :param directoryPath: <str> path to load
         """
-
         self._data = {}
 
         configFiles = os.listdir(directoryPath)
@@ -50,7 +57,7 @@ class Config:
 
     def getData(self):
         """
-        Returns the loaded configuration data.
+        Return the loaded configuration data.
 
         :return: <dict>
         """
@@ -59,7 +66,7 @@ class Config:
     @staticmethod
     def mergeDictionaries(sourceDictionary, destinationDictionary):
         """
-        Deep merges dictionaries recursively.
+        Deep merge dictionaries recursively.
 
         :param sourceDictionary: <dict> first dictionary with data
         :param destinationDictionary: <dict> second dictionary with data

@@ -3,12 +3,19 @@ import importlib.util
 
 
 class Dispatcher():
+    """
+    Viper dispatcher
+
+    Handles requests coming through any of the application's communication
+    interfaces and dispatches the appropriate controller.
+    """
+
     def __init__(self, application):
         self.application = application
 
     def dispatch(self, requestProtocol, requestPayload):
         """
-        Dispatches the request to the appropiate handler.
+        Dispatch the request to the appropriate handler.
 
         :param requestProtocol: <AbstractApplicationInterfaceProtocol> request protocol
         :param requestPayload: <dict> request

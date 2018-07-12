@@ -12,7 +12,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='nx.viper',
-    version='1.0.0a7',
+    version='1.2.0b1',
 
     description='Application development framework for twisted.',
     long_description=long_description,
@@ -25,14 +25,14 @@ setup(
     license='MIT',
 
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 3 - Beta',
 
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
 
         'License :: OSI Approved :: MIT License',
 
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 
     keywords='nixiware viper twisted',

@@ -6,6 +6,12 @@ from nx.viper.config import Config
 
 
 class Module:
+    """
+    Viper module
+
+    Container for models and services together with their configuration.
+    """
+
     def __init__(self, moduleName, modulePath, application):
         self.name = moduleName
         self.path = os.path.dirname(os.path.realpath(modulePath))
@@ -16,7 +22,11 @@ class Module:
         self._loadServices()
 
     def _loadConfiguration(self):
-        """Load module configuration files."""
+        """
+        Load module configuration files.
+
+        :return: <void>
+        """
         configPath = os.path.join(self.path, "config")
         if not os.path.isdir(configPath):
             return
@@ -26,7 +36,11 @@ class Module:
         Config.mergeDictionaries(config.getData(), self.application.config)
 
     def _loadModels(self):
-        """Load module models."""
+        """
+        Load module models.
+
+        :return: <void>
+        """
         modelsPath = os.path.join(self.path, "model")
         if not os.path.isdir(modelsPath):
             return
@@ -53,7 +67,11 @@ class Module:
             self.application.addModel(self.name, modelName, modelInstance)
 
     def _loadServices(self):
-        """Load module services."""
+        """
+        Load module services.
+
+        :return: <void>
+        """
         servicesPath = os.path.join(self.path, "service")
         if not os.path.isdir(servicesPath):
             return
@@ -62,10 +80,13 @@ class Module:
 
     def _scanDirectoryForServices(self, directoryPath):
         """
-        Scans a directory looking for services.
-        If another directory is found (excluding any python bytecode cache), it recursively
-        calls itself on that directory.
-        If a python file is found, an attempt to load the service from it is performed.
+        Scan a directory looking for service files.
+        If another directory is found (excluding any python bytecode cache), the method recursively calls itself on
+        that directory.
+        If a .py file is found, a quiet attempt to load the service from it is performed.
+
+        :param: <str> path to look for services
+        :return: <void>
         """
         # checking if path is actually a directory
         if not os.path.isdir(directoryPath):
@@ -86,8 +107,11 @@ class Module:
 
     def _loadService(self, servicePath):
         """
-        Checks if an application service can be found at the specified path.
-        If found, it instantiate it and adds it to the application service pool.
+        Check if an application service can be found at the specified path.
+        If found, instantiate it and add it to the application service pool.
+
+        :param: <str> service file path
+        :return: <void>
         """
         serviceName = ntpath.basename(servicePath).replace(".py", "")
 
