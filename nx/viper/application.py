@@ -72,7 +72,7 @@ class Application:
 
         for file in interfaceList:
             interfaceDirectoryPath = os.path.join(interfacesPath, file)
-            if not os.path.isdir(interfaceDirectoryPath) or file.startswith("__"):
+            if not os.path.isdir(interfaceDirectoryPath) or file.startswith("__") or file.startswith("."):
                 continue
 
             interfaceName = ntpath.basename(interfaceDirectoryPath)
@@ -199,7 +199,7 @@ class Application:
             "service"
         )
         for serviceFile in os.listdir(servicesPath):
-            if serviceFile.startswith("__"):
+            if serviceFile.startswith("__") or serviceFile.startswith("."):
                 continue
 
             serviceName = serviceFile.replace(".py", "")

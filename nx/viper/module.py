@@ -97,7 +97,7 @@ class Module:
                 directoryPath, item
             )
 
-            if os.path.isdir(itemPath) and not "__pycache__" in itemPath:
+            if os.path.isdir(itemPath) and not item.startswith("__") and not item.startswith("."):
                 self._scanDirectoryForServices(itemPath)
                 continue
 
