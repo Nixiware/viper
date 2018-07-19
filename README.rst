@@ -33,11 +33,12 @@ Requirements
 
 Testing
 ------------
-Unit tests are included in ```test/``` folder.
+Unit tests are included in ``test/`` folder.
 
-#### Performing tests
-* Install pytest by running ```pip install pytest```
-* Run ```py.test```
+Performing tests
+
+* Install pytest by running ``pip install pytest``
+* Run ``py.test``
 
 Links
 ------------
