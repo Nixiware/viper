@@ -31,6 +31,13 @@ Requirements
 ------------
 * Python 3.6
 
+Testing
+------------
+Unit tests are included in ```test/``` folder.
+
+#### Performing tests
+* Install pytest by running ```pip install pytest```
+* Run ```py.test```
 
 Links
 ------------
