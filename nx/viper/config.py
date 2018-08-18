@@ -111,13 +111,22 @@ class Config:
                         if envVariableType == "STR":
                             destinationDictionary[key] = str(os.environ[envVariableName])
                         elif envVariableType == "BOOL":
-                            destinationDictionary[key] = bool(os.environ[envVariableName])
+                            if os.environ[envVariableName] == "1":
+                                destinationDictionary[key] = True
+                            elif os.environ[envVariableName] == "0":
+                                destinationDictionary[key] = False
                         elif envVariableType == "INT":
                             destinationDictionary[key] = int(os.environ[envVariableName])
                         elif envVariableType == "FLOAT":
                             destinationDictionary[key] = float(os.environ[envVariableName])
                         elif envVariableType == "JSON":
-                            destinationDictionary[key] = json.loads(os.environ[envVariableName])
+                            try:
+                                destinationDictionary[key] = json.loads(os.environ[envVariableName])
+                            except Exception:
+                                log.warn(
+                                    "Environment variable {name} contains an invalid JSON value.",
+                                    name=envVariableName
+                                )
                         else:
                             log.warn(
                                 "Unsupported type {type} specified for variable {name}.",
