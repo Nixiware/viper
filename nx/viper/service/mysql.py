@@ -1,5 +1,5 @@
 from twisted.logger import Logger
-from twisted.internet import defer, reactor
+from twisted.internet import defer
 from twisted.enterprise import adbapi
 
 from nx.viper.application import Application as ViperApplication
@@ -79,11 +79,16 @@ class Service:
         :param kwargs: keyword arguments to be passed to interaction
         :return: <defer>
         """
-        return self._connectionPool.runInteraction(
-            interaction,
-            *args,
-            **kwargs
-        )
+        try:
+            return self._connectionPool.runInteraction(
+                interaction,
+                *args,
+                **kwargs
+            )
+        except:
+            d = defer.Deferred()
+            d.errback()
+            return d
 
     def runQuery(self, *args, **kwargs):
         """
@@ -93,7 +98,12 @@ class Service:
         :param kwargs: keyword arguments to be passed to cursor execute method
         :return: <defer>
         """
-        return self._connectionPool.runQuery(*args, **kwargs)
+        try:
+            return self._connectionPool.runQuery(*args, **kwargs)
+        except:
+            d = defer.Deferred()
+            d.errback()
+            return d
 
     def runOperation(self, *args, **kwargs):
         """
@@ -103,4 +113,9 @@ class Service:
         :param kwargs: keyword arguments to be passed to cursor execute method
         :return: <defer>
         """
-        return self._connectionPool.runOperation(*args, **kwargs)
+        try:
+            return self._connectionPool.runOperation(*args, **kwargs)
+        except:
+            d = defer.Deferred()
+            d.errback()
+            return d
