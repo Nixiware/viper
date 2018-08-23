@@ -12,7 +12,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='nx.viper',
-    version='1.2.3b4',
+    version='1.2.3b5',
 
     description='Application development framework for twisted.',
     long_description=long_description,
