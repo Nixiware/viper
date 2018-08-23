@@ -77,8 +77,8 @@ class Service:
                 lambda isEmpty:
                     self._scheduleDatabaseInit(isEmpty)
                 ,
-                lambda:
-                    self.log.error("[Viper.MySQL] Cannot initialize database.")
+                lambda error:
+                    self.log.error("[Viper.MySQL] Cannot check if database is empty. Error {error}", error=error)
             )
 
     def _checkIfDatabaseIsEmpty(self, successHandler=None, failHandler=None):
@@ -87,18 +87,22 @@ class Service:
 
         :param successHandler: <function(<bool>)> method called if interrogation was successful where the first argument
                                 is a boolean flag specifying if the database is empty or not
-        :param failHandler: <function> method called if interrogation failed
+        :param failHandler: <function(<str>)> method called if interrogation failed where the first argument is the
+                                error message
         :return: <void>
         """
         def failCallback(error):
+            errorMessage = str(error)
+            if isinstance(error, Failure):
+                errorMessage = error.getErrorMessage()
+
             if failHandler is not None:
-                reactor.callInThread(failHandler)
+                reactor.callInThread(failHandler, errorMessage)
 
         def selectCallback(transaction, successHandler):
             querySelect = \
                 "SELECT `TABLE_NAME` " \
-                "FROM " \
-                "INFORMATION_SCHEMA.TABLES " \
+                "FROM INFORMATION_SCHEMA.TABLES " \
                 "WHERE " \
                 "`TABLE_SCHEMA` = %s" \
                 ";"
