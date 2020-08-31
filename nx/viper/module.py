@@ -9,7 +9,7 @@ class Module:
     """
     Viper module
 
-    Container for models and services together with their configuration.
+    Container for services and their configuration.
     """
 
     def __init__(self, moduleName, modulePath, application):
@@ -18,7 +18,6 @@ class Module:
         self.application = application
 
         self._loadConfiguration()
-        self._loadModels()
         self._loadServices()
 
     def _loadConfiguration(self):
@@ -34,37 +33,6 @@ class Module:
         config = Config(configPath)
 
         Config.mergeDictionaries(config.getData(), self.application.config)
-
-    def _loadModels(self):
-        """
-        Load module models.
-
-        :return: <void>
-        """
-        modelsPath = os.path.join(self.path, "model")
-        if not os.path.isdir(modelsPath):
-            return
-
-        for modelFile in os.listdir(modelsPath):
-            modelName = modelFile.replace(".py", "")
-            modelPath = os.path.join(
-                self.path, "model", modelFile
-            )
-
-            if not os.path.isfile(modelPath):
-                continue
-
-            # importing model
-            modelSpec = importlib.util.spec_from_file_location(
-                modelName,
-                modelPath
-            )
-            model = importlib.util.module_from_spec(modelSpec)
-            modelSpec.loader.exec_module(model)
-
-            # initializing model
-            modelInstance = model.Model(self.application)
-            self.application.addModel(self.name, modelName, modelInstance)
 
     def _loadServices(self):
         """

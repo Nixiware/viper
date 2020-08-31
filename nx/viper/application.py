@@ -14,7 +14,7 @@ class Application:
     """
     Viper application
 
-    Core component, handles the loading of configuration, instances all the modules and their services and models.
+    Core component, handles the loading of configuration, instances all the modules and their services.
     """
 
     #
@@ -30,7 +30,6 @@ class Application:
         self.config = self._getConfiguration()
         self._interfaces = self._getInterfaces()
 
-        self._models = {}
         self._services = {}
 
         self._loadViperServices()
@@ -148,42 +147,6 @@ class Application:
             return True
 
         return False
-
-    #
-    # Models
-    #
-    def addModel(self, moduleName, modelName, model):
-        """
-        Add a model instance to the application model pool.
-
-        :param moduleName: <str> module name in which the model is located
-        :param modelName: <str> model name
-        :param model: <object> model instance
-        :return: <void>
-        """
-        modelIdentifier = "{}.{}".format(moduleName, modelName)
-        if modelIdentifier not in self._models:
-            self._models[modelIdentifier] = model
-        else:
-            message = "Application - addModel() - " \
-                      "A model with the identifier {} already exists." \
-                      .format(modelIdentifier)
-            raise Exception(message)
-
-    def getModel(self, modelIdentifier):
-        """
-        Return the requested model.
-
-        :param modelIdentifier: <str> model identifier
-        :return: <object> model instance
-        """
-        if modelIdentifier in self._models:
-            return self._models[modelIdentifier]
-        else:
-            message = "Application - getModel() - " \
-                      "Model with identifier {} does not exist." \
-                      .format(modelIdentifier)
-            raise Exception(message)
 
     #
     # Services
